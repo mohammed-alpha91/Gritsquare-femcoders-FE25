@@ -28,6 +28,10 @@ main {
     flex-grow: 1;
 }
 
+.logo {
+    width: 16rem;
+}
+
 /* Navigation Bar */
 .desktop-nav {
     display: none;
@@ -139,6 +143,11 @@ fieldset  {
 @media (min-width: 1024px) {
     header {
         justify-content: center;
+        padding: 1rem;
+    }
+
+    .logo {
+        width: 25rem;
     }
 
     .desktop-nav {
@@ -164,6 +173,10 @@ fieldset  {
 /* designar kortet på contact sidan  */
 
 .card {
+<<<<<<< update/femcoders
     width: 35%;
+=======
+    background-color: hotpink;
+>>>>>>> main
 }
 }
