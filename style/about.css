@@ -1,0 +1,11 @@
+.ruta {
+    background-color: white;                   
+    width: 200px;
+    min-height: 150px;
+    padding: 30px;
+    border: 5px solid orange;      
+    border-radius: 15px;
+    margin: 15px auto;              
+    text-align: center;
+    font-weight: bold;
+}
