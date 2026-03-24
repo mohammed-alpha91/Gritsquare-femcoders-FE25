@@ -9,7 +9,17 @@ Good Vibes is a vibrant, welcoming message board designed to create a community 
 **Let's spread positivity!**
 
 ## Features
+Write a message and post it on homepage
 
+Like others messages
+
+Profanityfilter*
+
+Pick a gif with your message
+
+
+
+**Added by contributor*
 ### Message Board
 - Click on the pink button to add new positive messages to the board
 - Browse messages from the community
@@ -41,7 +51,7 @@ Good Vibes is a vibrant, welcoming message board designed to create a community 
 ## Contributors
 Big thanks to all contributors!
 
-[Mohammed](https://github.com/mohammed-alpha91)
+Profanity filter [Mohammed](https://github.com/mohammed-alpha91)
 
 
 ## Sources

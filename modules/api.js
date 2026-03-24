@@ -1,6 +1,7 @@
 import { db, msgRef } from "./firebaseconfig.js";
-import { get, push, ref, query, orderByChild, onValue, serverTimestamp, runTransaction } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
+import { push, ref, query, orderByChild, onValue, serverTimestamp, runTransaction } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
 import { censorBadWords } from "./censor.js";
+import { searchGifs, displayGifResults, getSelectedGif, clearSelectedGif } from "./gifapi.js";
 
 const messageContainer = document.querySelector('#messages-display');
 const renderedNotes = new Set();
@@ -18,7 +19,7 @@ function formatTime(timestamp) {
 }
 
 //funktion som hämtar datan från firebase live
- export function liveUpdate() {
+export function liveUpdate() {
     const sortedMessages = query(msgRef, orderByChild('createdAt'));
 
     onValue(sortedMessages, (snapshot) => {
@@ -30,7 +31,7 @@ function formatTime(timestamp) {
             messageList.reverse().forEach((entry) => {
                 const id = entry[0];
                 const message = entry[1]
-                render(message.text, id, message.createdAt, message.likes || 0);
+                render(message.text, id, message.createdAt, message.likes || 0, message.gifUrl);
             });
         }
         else {
@@ -42,17 +43,20 @@ function formatTime(timestamp) {
 liveUpdate();
 
 //funktion som lägger till data i firebase
-export async function addMsg(text) {
-    const result = await push(msgRef, {
+export async function addMsg(text, gifUrl) {
+    const resultData = {
             text: text,
             createdAt: serverTimestamp(),
-            likes: 0
-        });
-        return result.key
+            likes: 0,
+            gifUrl: gifUrl,
+        };
+
+        const result = await push(msgRef, resultData);
+        return result.key;
     }
 
 //function som lägger till DOM-element
-function render(text, id, createdAt, likes) {
+function render(text, id, createdAt, likes, gifUrl) {
     const noteCard = document.createElement('article');
     noteCard.classList.add('post-it')
     
@@ -76,6 +80,15 @@ function render(text, id, createdAt, likes) {
         })
     })
     noteCard.appendChild(likeBtn);
+
+    if (gifUrl) {
+        const gifImg = document.createElement('img');
+        gifImg.src = gifUrl;
+        gifImg.style.maxWidth = '100%';
+        gifImg.style.borderRadius = '8px';
+        gifImg.style.marginBottom = '10px';
+        noteCard.appendChild(gifImg);
+    }
 
     const p = document.createElement('p');
     p.innerText = text;
@@ -103,16 +116,31 @@ openBtn.addEventListener('click', () => {
 // message card här (Elin)
 const form = document.querySelector('#msgForm');
 const input = document.querySelector('#messageInput');
+const gifSearchInput = document.querySelector('#gifSearchInput');
+const searchGifBtn = document.querySelector('#searchGifBtn');
+const gifResults = document.querySelector('#gifResults');
+
+searchGifBtn.addEventListener('click', async () => {
+    clearSelectedGif();
+    const search = gifSearchInput.value.trim();
+    const gifs = await searchGifs(search);
+    displayGifResults(gifs, '#gifResults')
+})
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const text = input.value.trim();
+  const gifUrl = getSelectedGif();
   if (!text) return;
 
   const censoredText = censorBadWords(text);
 
-  await addMsg(censoredText);
+  await addMsg(censoredText, gifUrl);
+
   form.reset();
   card.classList.add("hidden");
+  gifSearchInput.value = '';
+  gifResults.innerHTML = '';
+  clearSelectedGif();
 });
